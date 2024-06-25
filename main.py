@@ -16,6 +16,18 @@ class MyGame(arcade.Window):
 
    def on_draw(self):
        self.clear()
+       arcade.draw_circle_filled(300, 300, 200, arcade.color.YELLOW)
+       arcade.draw_circle_filled(380, 350, 20, arcade.color.BLACK)
+       arcade.draw_circle_filled(220, 350, 20, arcade.color.BLACK)
+       center_x = 300
+       center_y = 230
+       width = 150
+       height = 80
+       start_angle = 180
+       end_angle = 360
+       line_width = 10
+       arcade.draw_arc_outline(center_x, center_y, width, height, arcade.color.BLACK, start_angle, end_angle,
+                               line_width)
 
 
 def main():

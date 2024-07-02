@@ -111,14 +111,21 @@ class Person(arcade.Sprite):
         self.texture = self.run_textures[self.cur_texture][
             self.person_face_direction
         ]
-        if not self.idle:
-            self.cur_texture += 1
         if self.change_x == 0:
+            self.cur_texture += 0.5
+            if self.cur_texture % 2 == 0:
+                self.texture = self.idle_texture[0][self.person_face_direction]
+                if self.cur_texture >= 5:
+                    self.cur_texture = 0
+                self.texture = self.idle_texture[int(self.cur_texture)][
+                    self.person_face_direction
+                ]
+        if not self.idle:
+            self.cur_texture = int(self.cur_texture)
             self.cur_texture += 1
-            self.texture = self.idle_texture[0][self.person_face_direction]
-            if self.cur_texture >= 5:
+            if self.cur_texture >= 6:
                 self.cur_texture = 0
-            self.texture = self.idle_texture[self.cur_texture][
+            self.texture = self.run_textures[self.cur_texture][
                 self.person_face_direction
             ]
 

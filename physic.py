@@ -1,3 +1,4 @@
+import math
 import arcade
 
 SCREEN_TITLE = "Использование PyMunk"
@@ -41,6 +42,13 @@ LEFT_FACING = 1
 
 DISTANCE_TO_CHANGE_TEXTURE = 20
 
+BULLET_MOVE_FORCE = 4500
+
+BULLET_MASS = 0.1
+
+BULLET_GRAVITY = 300
+
+
 
 
 class GameWindow(arcade.Window):
@@ -60,10 +68,6 @@ class GameWindow(arcade.Window):
 
         arcade.set_background_color(arcade.color.AMAZON)
 
-        damping = DEFAULT_DAMPING
-        gravity = (0, -GRAVITY)
-        self.physics_engine = arcade.PymunkPhysicsEngine(damping=damping,
-                                                         gravity=gravity)
 
 
     def setup(self):
@@ -74,12 +78,18 @@ class GameWindow(arcade.Window):
         print(tile_map.sprite_lists)
         self.wall_list = tile_map.sprite_lists["Platforms"]
         self.item_list = tile_map.sprite_lists["Dynamic Items"]
-        self.player_sprite = arcade.Sprite(":resources:images/animated_characters/female_person/femalePerson_idle.png",
-                                           SPRITE_SCALING_PLAYER)
+        self.player_sprite = PlayerSprite()
 
         self.player_sprite.center_x = SPRITE_SIZE + SPRITE_SIZE / 2
         self.player_sprite.center_y = SPRITE_SIZE + SPRITE_SIZE / 2
         self.player_list.append(self.player_sprite)
+        damping = DEFAULT_DAMPING
+        gravity = (0, -GRAVITY)
+        self.physics_engine = arcade.PymunkPhysicsEngine(damping=damping,
+                                                         gravity=gravity)
+        self.physics_engine.add_sprite_list(self.item_list,
+                                            friction=DYNAMIC_ITEM_FRICTION,
+                                            collision_type="item")
         self.physics_engine.add_sprite(self.player_sprite,
                                        friction=PLAYER_FRICTION,
                                        mass=PLAYER_MASS,
@@ -91,6 +101,8 @@ class GameWindow(arcade.Window):
                                             friction=WALL_FRICTION,
                                             collision_type="wall",
                                             body_type=arcade.PymunkPhysicsEngine.STATIC)
+
+
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT:
@@ -107,6 +119,50 @@ class GameWindow(arcade.Window):
             self.left_pressed = False
         elif key == arcade.key.RIGHT:
             self.right_pressed = False
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        bullet = BulletSprite(20, 5, arcade.color.DARK_YELLOW)
+        self.bullet_list.append(bullet)
+        start_x = self.player_sprite.center_x
+        start_y = self.player_sprite.center_y
+        bullet.position = self.player_sprite.position
+
+        dest_x = x
+        dest_y = y
+
+        x_diff = dest_x - start_x
+        y_diff = dest_y - start_y
+        angle = math.atan2(y_diff, x_diff)
+
+        size = max(self.player_sprite.width, self.player_sprite.height) / 2
+
+        bullet.center_x += size * math.cos(angle)
+        bullet.center_y += size * math.sin(angle)
+        bullet.angle = math.degrees(angle)
+
+        bullet_gravity = (0, -BULLET_GRAVITY)
+
+        self.physics_engine.add_sprite(bullet,
+                                       mass=BULLET_MASS,
+                                       damping=1.0,
+                                       friction=0.6,
+                                       collision_type="bullet",
+                                       gravity=bullet_gravity,
+                                       elasticity=0.9)
+
+        force = (BULLET_MOVE_FORCE, 0)
+        self.physics_engine.apply_force(bullet, force)
+
+        def wall_hit_handler(bullet_sprite, _wall_sprite, _arbiter, _space, _data):
+            bullet_sprite.remove_from_sprite_lists()
+
+        self.physics_engine.add_collision_handler("bullet", "wall", post_handler=wall_hit_handler)
+
+        def item_hit_handler(bullet_sprite, item_sprite, _arbiter, _space, _data):
+            bullet_sprite.remove_from_sprite_lists()
+            item_sprite.remove_from_sprite_lists()
+
+        self.physics_engine.add_collision_handler("bullet", "item", post_handler=item_hit_handler)
 
     def on_update(self, delta_time):
         if self.left_pressed and not self.right_pressed:
@@ -184,6 +240,10 @@ class PlayerSprite(arcade.Sprite):
                self.cur_texture = 0
            self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
 
+class BulletSprite(arcade.SpriteSolidColor):
+   def pymunk_moved(self, physics_engine, dx, dy, d_angle):
+       if self.center_y < -100:
+           self.remove_from_sprite_lists()
 
 
 def main():

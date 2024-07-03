@@ -66,6 +66,8 @@ class GameWindow(arcade.Window):
 
         self.physics_engine = None
 
+        self.moving_sprites_list = None
+
         arcade.set_background_color(arcade.color.AMAZON)
 
 
@@ -102,7 +104,9 @@ class GameWindow(arcade.Window):
                                             collision_type="wall",
                                             body_type=arcade.PymunkPhysicsEngine.STATIC)
 
-
+        self.moving_sprites_list = tile_map.sprite_lists['Moving Platforms']
+        self.physics_engine.add_sprite_list(self.moving_sprites_list,
+                                            body_type=arcade.PymunkPhysicsEngine.KINEMATIC)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT:
@@ -176,6 +180,25 @@ class GameWindow(arcade.Window):
         else:
             self.physics_engine.set_friction(self.player_sprite, 1.0)
         self.physics_engine.step()
+        for moving_sprite in self.moving_sprites_list:
+            if moving_sprite.boundary_right and \
+                    moving_sprite.change_x > 0 and \
+                    moving_sprite.right > moving_sprite.boundary_right:
+                moving_sprite.change_x *= -1
+            elif moving_sprite.boundary_left and \
+                    moving_sprite.change_x < 0 and \
+                    moving_sprite.left > moving_sprite.boundary_left:
+                moving_sprite.change_x *= -1
+            if moving_sprite.boundary_top and \
+                    moving_sprite.change_y > 0 and \
+                    moving_sprite.top > moving_sprite.boundary_top:
+                moving_sprite.change_y *= -1
+            elif moving_sprite.boundary_bottom and \
+                    moving_sprite.change_y < 0 and \
+                    moving_sprite.bottom < moving_sprite.boundary_bottom:
+                moving_sprite.change_y *= -1
+            velocity = (moving_sprite.change_x * 1 / delta_time, moving_sprite.change_y * 1 / delta_time)
+            self.physics_engine.set_velocity(moving_sprite, velocity)
 
     def on_draw(self):
         self.clear()
@@ -183,6 +206,7 @@ class GameWindow(arcade.Window):
         self.item_list.draw()
         self.bullet_list.draw()
         self.player_list.draw()
+        self.moving_sprites_list.draw()
 
 
 class PlayerSprite(arcade.Sprite):

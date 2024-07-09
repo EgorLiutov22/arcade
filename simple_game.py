@@ -19,6 +19,9 @@ class OurGame(arcade.Window):
         self.columns_list = arcade.SpriteList()
         self.stop = False
         self.sound_lose = arcade.load_sound('resources/lose.wav')
+        self.sound = arcade.load_sound('resources/music.mp3')
+        self.music = arcade.play_sound(self.sound, volume=0.1, looping=True)
+        self.sound_wing = arcade.load_sound('resources/sfx_wing.ogg')
 
     def setup(self):
         for i in range(5):
@@ -46,6 +49,7 @@ class OurGame(arcade.Window):
             hit_list = arcade.check_for_collision_with_list(self.player, self.columns_list)
             if len(hit_list) > 0:
                 self.player.stop()
+                arcade.stop_sound(self.music)
                 for column in self.columns_list:
                     column.stop()
                 arcade.play_sound(self.sound_lose)
@@ -55,6 +59,7 @@ class OurGame(arcade.Window):
         if key == arcade.key.SPACE and self.stop is False:
             self.player.change_y = 5
             self.player.change_angle = 5
+            arcade.play_sound(self.sound_wing)
 
     def on_key_release(self, key, modifiers):
         pass

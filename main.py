@@ -43,13 +43,9 @@ class Game(arcade.Window):
 
         coordinate_list = [[512, 96], [256, 96], [768, 96]]
 
-        for coordinate in coordinate_list:
-            # Add a crate on the ground
-            box = arcade.Sprite(
-                ":resources:images/tiles/boxCrate_double.png", TILE_SCALING
-            )
-            box.position = coordinate
-            self.scene.add_sprite("Walls", box)
+        self.box = Box()
+        self.box.position = [512, 96]
+        self.scene.add_sprite("Walls", self.box)
 
     def on_draw(self):
         self.clear()
@@ -58,6 +54,7 @@ class Game(arcade.Window):
 
     def update(self, delta_time: float):
         self.player_sprite.update()
+        self.box.update()
 
     def on_key_press(self, key, modifiers):
 
@@ -66,7 +63,7 @@ class Game(arcade.Window):
                 self.player_sprite.change_y = PLAYER_JUMP_SPEED
                 self.isGround = False
 
-        elif key == arcade.key.LEFT or key == arcade.key.A:
+        if key == arcade.key.LEFT or key == arcade.key.A:
             self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
@@ -104,6 +101,12 @@ class Player(arcade.Sprite):
 class Box(arcade.Sprite):
     def __init__(self):
         super().__init__(":resources:images/tiles/boxCrate_double.png", TILE_SCALING)
+        self.change_y = 50.0
+
+    def update(self):
+        self.center_y += self.change_y
+        if self.top >= 500 or self.bottom <= 64:
+            self.change_y = -self.change_y
 
 
 if __name__ == "__main__":

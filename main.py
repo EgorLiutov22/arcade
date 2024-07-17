@@ -104,6 +104,13 @@ class GameView(arcade.View):
             pause = PauseView(self)
             self.window.show_view(pause)
 
+    def on_show_view(self):
+        arcade.set_background_color(arcade.color.AMAZON)
+
+    @property
+    def get_player_sprite(self):
+        return self.player_sprite
+
 
 class GameOverView(arcade.View):
     def __init__(self):
@@ -116,10 +123,12 @@ class GameOverView(arcade.View):
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
 
+
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         game_view = GameView()
         game_view.setup()
         self.window.show_view(game_view)
+
 
 
 class PauseView(arcade.View):
@@ -129,7 +138,7 @@ class PauseView(arcade.View):
 
     def on_draw(self):
         self.clear()
-        player_sprite = self.game_view.player_sprite
+        player_sprite = self.game_view.get_player_sprite
         player_sprite.draw()
         arcade.draw_text("Пауза", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 50,
                          arcade.color.BLACK, font_size=50, anchor_x="center")
@@ -146,6 +155,11 @@ class PauseView(arcade.View):
                          arcade.color.BLACK,
                          font_size=20,
                          anchor_x="center")
+        arcade.draw_lrtb_rectangle_filled(left=player_sprite.left,
+                                          right=player_sprite.right,
+                                          top=player_sprite.top,
+                                          bottom=player_sprite.bottom,
+                                          color=arcade.color.ORANGE + (200,))
 
     def on_key_press(self, key, _modifiers):
         if key == arcade.key.ESCAPE:
@@ -153,6 +167,11 @@ class PauseView(arcade.View):
         elif key == arcade.key.ENTER:
             game = GameView()
             self.window.show_view(game)
+
+    def on_show_view(self):
+        arcade.set_background_color(arcade.color.ORANGE)
+
+
 
 
 def main():

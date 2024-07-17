@@ -111,6 +111,7 @@ class GameView(arcade.View):
     def get_player_sprite(self):
         return self.player_sprite
 
+
 class InstructionView(arcade.View):
     def on_show_view(self):
         """ This is run once when we switch to this view """
@@ -120,13 +121,15 @@ class InstructionView(arcade.View):
         # to reset the viewport back to the start so we can see what we draw.
         arcade.set_viewport(0, self.window.width, 0, self.window.height)
         arcade.set_background_color(arcade.color.REDWOOD)
+
     def on_draw(self):
         """ Draw this view """
         self.clear()
         arcade.draw_text("Начать игру", self.window.width / 2, self.window.height / 2,
                          arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Нажми что бы начать", self.window.width / 2, self.window.height / 2-75,
+        arcade.draw_text("Нажми что бы начать", self.window.width / 2, self.window.height / 2 - 75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
+
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ If the user presses the mouse button, start the game. """
         game_view = GameView()
@@ -145,12 +148,10 @@ class GameOverView(arcade.View):
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
 
-
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         game_view = GameView()
         game_view.setup()
         self.window.show_view(game_view)
-
 
 
 class PauseView(arcade.View):
@@ -192,8 +193,6 @@ class PauseView(arcade.View):
 
     def on_show_view(self):
         arcade.set_background_color(arcade.color.ORANGE)
-
-
 
 
 def main():

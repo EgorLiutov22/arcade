@@ -9,6 +9,7 @@ MOVEMENT_SPEED = 5
 VIEWPORT_MARGIN = 200
 AMBIENT_COLOR = (10, 10, 10)
 
+
 class MyGame(arcade.Window):
 
     def __init__(self, width, height, title):

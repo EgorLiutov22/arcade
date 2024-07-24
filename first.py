@@ -58,6 +58,94 @@ class MyGame(arcade.Window):
         color = arcade.csscolor.WHITE
         self.player_light = Light(0, 0, radius, color, mode)
 
+        x = 100
+        y = 200
+        radius = 100
+        mode = 'soft'
+        color = arcade.csscolor.WHITE
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 300
+        y = 150
+        radius = 200
+        color = arcade.csscolor.WHITE
+        mode = 'soft'
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 50
+        y = 450
+        radius = 100
+        mode = 'soft'
+        color = arcade.csscolor.RED
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 450
+        y = 450
+        radius = 100
+        mode = 'soft'
+        color = arcade.csscolor.BLUE
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 250
+        y = 450
+        radius = 100
+        mode = 'soft'
+        color = arcade.csscolor.GREEN
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 650
+        y = 450
+        radius = 100
+        mode = 'soft'
+        color = arcade.csscolor.RED
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 750
+        y = 450
+        radius = 100
+        mode = 'soft'
+        color = arcade.csscolor.GREEN
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 850
+        y = 450
+        radius = 100
+        mode = 'soft'
+        color = arcade.csscolor.BLUE
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 650
+        y = 150
+        radius = 100
+        mode = 'hard'
+        color = arcade.csscolor.RED
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 750
+        y = 150
+        radius = 100
+        mode = 'hard'
+        color = arcade.csscolor.GREEN
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
+        x = 850
+        y = 150
+        radius = 100
+        mode = 'hard'
+        color = arcade.csscolor.BLUE
+        light = Light(x, y, radius, color, mode)
+        self.light_layer.add(light)
+
     def on_draw(self):
         self.clear()
         with self.light_layer:

@@ -119,6 +119,7 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time):
         self.physics_engine.update()
         self.scroll_screen()
+        self.player_light.position = self.player_sprite.position
 
     def on_resize(self, width, height):
         self.scroll_screen()

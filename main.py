@@ -1,5 +1,6 @@
 import random
 import time
+import math
 
 
 import arcade
@@ -12,6 +13,10 @@ SCREEN_HEIGHT = 768
 SCREEN_TITLE = "GPU Particle Explosion"
 
 PARTICLE_COUNT = 300
+
+MIN_FADE_TIME = 0.25
+MAX_FADE_TIME = 1.5
+
 
 
 @dataclass
@@ -31,7 +36,7 @@ class MyWindow(arcade.Window):
             fragment_shader="fragment_shader.glsl",
         )
 
-        self.ctx.enable_only()
+        self.ctx.enable_only(self.ctx.BLEND)
 
     def on_draw(self):
         self.clear()
@@ -42,25 +47,42 @@ class MyWindow(arcade.Window):
             burst.vao.render(self.program, mode=self.ctx.POINTS)
 
     def on_update(self, dt):
-        pass
+        temp_list = self.burst_list.copy()
+        for burst in temp_list:
+            if time.time() - burst.start_time > MAX_FADE_TIME:
+                self.burst_list.remove(burst)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         def _gen_initial_data(initial_x, initial_y):
             for i in range(PARTICLE_COUNT):
-                dx = random.uniform(-.2, .2)
-                dy = random.uniform(-.2, .2)
+                angle = random.uniform(0, 2 * math.pi)
+                speed = random.uniform(0.0, 0.3)
+                dx = math.sin(angle) * speed
+                dy = math.cos(angle) * speed
+                red = random.uniform(0.5, 1.0)
+                green = random.uniform(0, red)
+                blue = 0
+                fade_rate = random.uniform(1 / MAX_FADE_TIME, 1 / MIN_FADE_TIME)
+
                 yield initial_x
                 yield initial_y
                 yield dx
                 yield dy
-
+                yield red
+                yield green
+                yield blue
+                yield fade_rate
         x2 = x / self.width * 2. - 1.
         y2 = y / self.height * 2. - 1.
         initial_data = _gen_initial_data(x2, y2)
         buffer = self.ctx.buffer(data=array('f', initial_data))
         buffer_description = arcade.gl.BufferDescription(buffer,
-                                                         '2f 2f',
-                                                         ['in_pos', 'in_vel'])
+                                                         '2f 2f 3f f',
+                                                         ['in_pos',
+                                                          'in_vel',
+                                                          'in_color',
+                                                          'in_fade_rate'])
+
         vao = self.ctx.geometry([buffer_description])
         burst = Burst(buffer=buffer, vao=vao, start_time=time.time())
         self.burst_list.append(burst)

@@ -1,5 +1,12 @@
 import math
+import os
+import sys
+
 import arcade
+
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    os.chdir(sys._MEIPASS)
+
 
 SCREEN_TITLE = "Использование PyMunk"
 
